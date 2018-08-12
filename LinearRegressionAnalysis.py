@@ -16,9 +16,10 @@ import os
 #path = 'G:/My Drive/UCLA/Lewis_lab/Projects/MultiSequence MR-CT phantom/#Manuscript June272018/Results/Cleaned Data'
 
 # Laptop path
-path = '/Volumes/GoogleDrive/My Drive/UCLA/Lewis_lab/Projects/MultiSequence MR-CT phantom/Manuscript 6_27_2018/Results/Cleaned Data/'
+#path = '/Volumes/GoogleDrive/My Drive/UCLA/Lewis_lab/Projects/MultiSequence MR-CT phantom/Manuscript 6_27_2018/Results/Cleaned Data/'
+path = '/Volumes/GoogleDrive/My Drive/UCLA/Lewis_lab/Projects/MultiSequence MR-CT phantom/Manuscript 6_27_2018/'
 
-os.chdir(path)
+os.chdir(path+'Results/Cleaned Data/')
 
 # 3. Import data
 dataset = pd.read_csv('CleanData.csv')
@@ -68,90 +69,35 @@ X = X.transpose()
 y = T1v
 
 
+os.chdir(path+'Fit code')
 from fitT1 import T1fit
-fz = T1fit(X,y)
 
-
-# 2. Model training: Fitting the multiple linear regression model
-from sklearn.linear_model import BayesianRidge
-reg = BayesianRidge()
-reg.fit(X,y)
-#y_pred = reg.predict(X)
-
-Q = reg.coef_.transpose().tolist()
-Q.insert(0,reg.intercept_.tolist())
-
-# Try polynomial fit for T1
-from sklearn.preprocessing import PolynomialFeatures
-poly_reg = PolynomialFeatures(degree = 3)
-X_poly = poly_reg.fit_transform(X)
-
-# Keep statistically significant varaibles
-# Remove variable with highest p value and repeat step
-
-import statsmodels.formula.api as sm
-# Optimal model for 2 parameter fit
-X_opt = X_poly[:,[0,1,4,5,6,14]]
-regressor_OLS = sm.OLS(endog =y, exog = X_opt).fit()
-regressor_OLS.summary() 
-
-
-# Remove those particular powers from the fit model and refit
-from sklearn.linear_model import LinearRegression 
-polyreg_ = LinearRegression()
-polyreg_.fit(X_poly,y)
-
-interC_ = polyreg_.intercept_
-
-coef_ = list([None])
-sups_ = list([None])
-
-for i in [0,1,4,5,6,14]:
-      coef_.append(polyreg_.coef_[i])
-      sups_.append(poly_reg.powers_[i,:].tolist())
-
-# X_ = np.delete(X_,(1),axis=1)
-
-# To get which power variable
-# print poly.powers_
-
-
-# Plot fits with data
-# Plot T1 vs Gd
-lineN = 7
-
-x = np.linspace(0,max(Gdc),11).tolist()
-n=4
-lists = [[1]*len(x) for j in range(n)]
-
-lists[0] =  np.transpose(x)
-lists[1] =  [X.cAg[5*lineN]*d for d in lists[1]]
-lists[2] =  [X.cCa[5*lineN]*d for d in lists[2]]
-lists[3] =  [X.cSi[5*lineN]*d for d in lists[3]]
-
-xVal = pd.DataFrame(data=lists,dtype=np.float64)
-xVal = xVal.transpose()
-
-# Polynomial fit
-X_poly_val = poly_reg.fit_transform(xVal)
-xw = set(range(0,15))
-b = set([0,1,4,5,6,14])
-remCols = list(xw^b)
-
-for jk in remCols:
-      X_poly_val[:,jk]  = 0*X_poly_val[:,jk] 
-
-polyfit_ = polyreg_.predict(X_poly_val)
-
-# Linear fit
-fitLin = reg.predict(xVal)
+fT1 = []
+for lineN in range(0,18):
+      fT1info = T1fit(X,y,lineN)
+      xR = fT1info.x
+      fT1.append(fT1info.fitLin)
+      
 
 # Create plots
+nrow = 6
+ncol = 3
+fig, axs = plt.subplots(nrow, ncol)
+for i, ax in enumerate(fig.axes):
+      #ax.set_ylabel(str(i))
+      ax.errorbar(dataset2.cGd[5*i:5*i+5],dataset2.meanT1[5*i:5*i+5],xerr=dataset2.cGd_err[5*i:5*i+5],yerr = dataset2.errT1[5*i:5*i+5],fmt='.k') 
+      ax.set_xlabel('Gd (umol/ml)',fontsize=7)
+      ax.set_ylabel('1/T1 (1/ms)',fontsize=7)
+      ax.tick_params(labelsize=6)
+      ax.ticklabel_format(style='sci',axis='y',scilimits=(0,0)) 
+      fig.tight_layout(rect=[0, 0, 1, 1.5])
+      
+# Create indivual plots      
+lineN = 18      
 plt.errorbar(dataset2.cGd[5*lineN:5*lineN+5],dataset2.meanT1[5*lineN:5*lineN+5],xerr=dataset2.cGd_err[5*lineN:5*lineN+5],yerr = dataset2.errT1[5*lineN:5*lineN+5],fmt='.k')
 plt.xlabel('Gd (umol/ml)',fontsize=14)
 plt.ylabel('1/T1 (1/ms)',fontsize=14)
-plt.plot(x,fitLin,'-k')
-# plt.plot(x,polyfit_,'-b')
+plt.plot(xR,fT1[lineN],'-k')
 plt.show()
 
 # Plot T2 vs Agarose

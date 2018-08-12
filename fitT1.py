@@ -5,8 +5,12 @@ Created on Sat Aug 11 14:54:49 2018
 
 @author: kamalsinghrao
 """
+class ReturnValue(object):
+      def __init__(self, x, fitLin):
+            self.x = x
+            self.fitLin = fitLin
 
-def T1fit(X,y):      
+def T1fit(X,y,line):      
       import pandas as pd
 
       # 2. Model training: Fitting the multiple linear regression model
@@ -53,7 +57,6 @@ def T1fit(X,y):
       
       # Plot fits with data
       # Plot T1 vs Gd
-      lineN = 7
 
       import numpy   
       x = numpy.linspace(0,max(X.cGd),11).tolist()
@@ -61,9 +64,9 @@ def T1fit(X,y):
       lists = [[1]*len(x) for j in range(n)]
       
       lists[0] =  numpy.transpose(x)
-      lists[1] =  [X.cAg[5*lineN]*d for d in lists[1]]
-      lists[2] =  [X.cCa[5*lineN]*d for d in lists[2]]
-      lists[3] =  [X.cSi[5*lineN]*d for d in lists[3]]
+      lists[1] =  [X.cAg[5*line]*d for d in lists[1]]
+      lists[2] =  [X.cCa[5*line]*d for d in lists[2]]
+      lists[3] =  [X.cSi[5*line]*d for d in lists[3]]
       
       xVal = pd.DataFrame(data=lists,dtype=numpy.float64)
       xVal = xVal.transpose()
@@ -81,4 +84,4 @@ def T1fit(X,y):
       
       # Linear fit
       fitLin = reg.predict(xVal)
-      return fitLin
+      return ReturnValue(x, fitLin)
