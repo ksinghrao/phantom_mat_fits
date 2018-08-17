@@ -16,7 +16,6 @@ import os
 #path = 'G:/My Drive/UCLA/Lewis_lab/Projects/MultiSequence MR-CT phantom/#Manuscript June272018/Results/Cleaned Data'
 
 # Laptop path
-#path = '/Volumes/GoogleDrive/My Drive/UCLA/Lewis_lab/Projects/MultiSequence MR-CT phantom/Manuscript 6_27_2018/Results/Cleaned Data/'
 path = '/Volumes/GoogleDrive/My Drive/UCLA/Lewis_lab/Projects/MultiSequence MR-CT phantom/Manuscript 6_27_2018/'
 
 os.chdir(path+'Results/Cleaned Data/')
@@ -45,9 +44,9 @@ Agc = dataset2.cAg.copy()
 Cac = dataset2.cCa.copy()
 Sic = dataset2.cSi.copy()
 
-#T1v = dataset2.meanT1
-#T2v = dataset2.meanT2
-#HUv = dataset2.meanHU
+T1v = dataset2.meanT1
+T2v = dataset2.meanT2
+HUv = dataset2.meanHU
 
 X = pd.DataFrame([Gdc,Agc,Cac,Sic])
 X = X.transpose()
@@ -56,7 +55,6 @@ X = X.transpose()
 # Create plot data
 dset = dataset2.copy()
 dset = dset.reset_index(drop=True)
-
       
 xB = dset[['cGd', 'cAg', 'cCa','cSi']].copy()
 
@@ -68,7 +66,10 @@ from sklearn.linear_model import BayesianRidge
 reg = BayesianRidge()
 reg.fit(xB,y)
 
-# Make plots
+# Save fit parameters
+fT1_par = [reg.intercept_] + reg.coef_.tolist()
+
+# Create plots
 nrow = 3
 ncol = 6
 fig, axs = plt.subplots(nrow, ncol,figsize=(20, 10))
@@ -94,8 +95,13 @@ for i, ax in enumerate(fig.axes):
       ax.yaxis.offsetText.set(size=7)
       fig.tight_layout(rect=[0, 0, 1, 1])
             
-# 4. Create T2 vs Ag plots and fits      
+# 4. Create T2 vs Ag plots and fits         
 # 4a.CaCO3 data
+# Try combo fit      
+regT = BayesianRidge(compute_score=True)
+regT.fit(X,T2v)
+fT2_par = [regT.intercept_] + regT.coef_.tolist()
+
 # Reformat CaCO3 data  
 dCaCO3 = dataset2[(dataset2.cSi ==0)]
 
@@ -118,6 +124,9 @@ os.chdir(path+'Fit code')
 from sklearn.linear_model import BayesianRidge
 reg = BayesianRidge(compute_score=True)
 reg.fit(xB,y)
+
+# Save fit parameters
+fT2_CaCO3_par = [reg.intercept_] + reg.coef_.tolist()
       
 # Create plots
 nrow = 4
@@ -131,9 +140,8 @@ for i, ax in enumerate(fig.axes):
 
       ax.errorbar(xQ.cAg,yQ,xerr=xQerr,yerr = yQerr,fmt='.k') 
       ax.plot(xQ.cAg,reg.predict(xQ).tolist(),'-k')
-      
-      #ax.errorbar(dset.cAg[4*i:4*i+4],dset.meanT2[4*i:4*i+4],xerr=dset.cAg_err[4*i:4*i+4],yerr = dset.errT2[4*i:4*i+4],fmt='.k') 
-      
+      ax.plot(xQ.cAg,regT.predict(xQ).tolist(),'-g')
+            
       title_ = 'Gd = ' + str(dset.cGd[4*i]) + 'g \n CaCO$_3$ = ' + str(dset.cCa[4*i]) + 'g \n SiO$_2$ = ' + str(dataset2.cSi[4*i]) + 'g'
       ax.set_title(title_,fontsize = 7,y=1.08)
       ax.set_xlabel('Ag (g)',fontsize=7)
@@ -179,6 +187,10 @@ from sklearn.linear_model import BayesianRidge
 reg = BayesianRidge(compute_score=True)
 reg.fit(xB,y)
 
+# Save fit parameters
+fT2_SiO2_par = [reg.intercept_] + reg.coef_.tolist()
+
+
 # Create plots
 nrow = 5
 ncol = 2
@@ -190,6 +202,7 @@ for i, ax in enumerate(fig.axes):
       yQerr = dset.errT2[3*i:3*i+3]
       ax.errorbar(xQ.cAg,yQ,xerr=xQerr,yerr = yQerr,fmt='.k') 
       ax.plot(xQ.cAg,reg.predict(xQ).tolist(),'-k')
+      ax.plot(xQ.cAg,regT.predict(xQ).tolist(),'-g')
 
       ax.set_xlabel('Ag (g)',fontsize=7)
       ax.set_ylabel('1/T2 (1/ms)',fontsize=7)
@@ -203,6 +216,11 @@ for i, ax in enumerate(fig.axes):
 
 # 5. Create HU vs CaCO3 and SiO2 plots and fits  
 # 5a. Plot CaCO3 vs HU
+# Try combo fit      
+regT = BayesianRidge(compute_score=True)
+regT.fit(X,HUv)
+fHU_par = [regT.intercept_] + regT.coef_.tolist() 
+      
 # Reformat CaCO3 data      
 dHU_CaCO3_di = []
 
@@ -226,6 +244,9 @@ from sklearn.linear_model import BayesianRidge
 reg = BayesianRidge(compute_score=True)
 reg.fit(xB,y)
 
+# Save fit parameters
+fHU_CaCO3_par = [reg.intercept_] + reg.coef_.tolist()
+
 # Plot data
 nrow = 5
 ncol = 4
@@ -237,6 +258,7 @@ for i, ax in enumerate(fig.axes):
       yQerr = dset.errHU[3*i:3*i+3]
       ax.errorbar(xQ.cCa,yQ,xerr=xQerr,yerr = yQerr,fmt='.k') 
       ax.plot(xQ.cCa,reg.predict(xQ).tolist(),'-k')
+      ax.plot(xQ.cCa,regT.predict(xQ).tolist(),'-g')
 
       title_ = 'Gd = ' + str(dset.cGd[3*i]) + 'g \n Agarose = ' + str(dset.cAg[3*i]) + 'g \n SiO$_2$ = ' + str(dset.cSi[3*i]) + 'g'
       ax.set_title(title_,fontsize = 7,y=1.08)
@@ -249,7 +271,6 @@ for i, ax in enumerate(fig.axes):
 
       
 # Plot SiO2 data
-
 # Reformat data   
 # Add SiO2 =0 datapoint
 dSiO2 = dataset2[60:len(dataset2)].copy()
@@ -282,18 +303,22 @@ from sklearn.linear_model import BayesianRidge
 reg = BayesianRidge(compute_score=True)
 reg.fit(xB,y)
 
+# Save fit parameters
+fHU_SiO2_par = [reg.intercept_] + reg.coef_.tolist()
+
 # Plot data
 nrow = 2
 ncol = 5
 
 fig, axs = plt.subplots(nrow, ncol,figsize=(20, 10))
-for i, ax in enumerate(fig.axes): 
-      xQ = xB[3*i:3*i+3]     
+for i, ax in enumerate(fig.axes):
+      xQ = xB[3*i:3*i+3]
       yQ = dset.meanHU[3*i:3*i+3]
       xQerr = dset.cCa_err[3*i:3*i+3]
       yQerr = dset.errHU[3*i:3*i+3]
       ax.errorbar(xQ.cSi,yQ,xerr=xQerr,yerr = yQerr,fmt='.k') 
       ax.plot(xQ.cSi,reg.predict(xQ).tolist(),'-k')
+      ax.plot(xQ.cSi,regT.predict(xQ).tolist(),'-g')
  
       title_ = 'Gd = ' + str(dset.cGd[3*i]) + 'g \n Agarose = ' + str(dset.cAg[3*i]) + 'g \n CaCO$_3$ = ' + str(dset.cCa[3*i]) + 'g'
       ax.set_title(title_,fontsize = 7,y=1.08)
@@ -304,4 +329,8 @@ for i, ax in enumerate(fig.axes):
       ax.yaxis.offsetText.set(size=7)
       fig.tight_layout(rect=[0, 0, 1, 1])      
       
+
+# Save fit parameters
+a = np.asarray([fT1_par, fT2_par, fHU_par ])
+np.savetxt("fitParameters.csv", a, delimiter=",")
       
