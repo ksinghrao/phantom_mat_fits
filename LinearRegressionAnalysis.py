@@ -84,7 +84,7 @@ for i, ax in enumerate(fig.axes):
       
       #ax.set_ylabel(str(i))
       ax.errorbar(xQ.cGd,yQ,xerr=xQerr,yerr = yQerr,fmt='.k') 
-      ax.plot(xQ.cGd,reg.predict(xQ).tolist(),'-k')
+      ax.plot(xQ.cGd,reg.predict(xQ).tolist(),'-g')
       
       title_ = 'Agarose = ' + str(dataset2.cAg[5*i]) + 'g \n CaCO$_3$ = ' + str(dataset2.cCa[5*i]) + 'g \n SiO$_2$ = ' + str(dataset2.cSi[5*i]) + 'g'
       ax.set_title(title_,fontsize = 7,y=1.08)
@@ -139,7 +139,7 @@ for i, ax in enumerate(fig.axes):
       yQerr = dset.errT2[4*i:4*i+4]
 
       ax.errorbar(xQ.cAg,yQ,xerr=xQerr,yerr = yQerr,fmt='.k') 
-      ax.plot(xQ.cAg,reg.predict(xQ).tolist(),'-k')
+      #ax.plot(xQ.cAg,reg.predict(xQ).tolist(),'-k')
       ax.plot(xQ.cAg,regT.predict(xQ).tolist(),'-g')
             
       title_ = 'Gd = ' + str(dset.cGd[4*i]) + 'g \n CaCO$_3$ = ' + str(dset.cCa[4*i]) + 'g \n SiO$_2$ = ' + str(dataset2.cSi[4*i]) + 'g'
@@ -201,7 +201,7 @@ for i, ax in enumerate(fig.axes):
       xQerr = dset.cAg_err[3*i:3*i+3]
       yQerr = dset.errT2[3*i:3*i+3]
       ax.errorbar(xQ.cAg,yQ,xerr=xQerr,yerr = yQerr,fmt='.k') 
-      ax.plot(xQ.cAg,reg.predict(xQ).tolist(),'-k')
+      #ax.plot(xQ.cAg,reg.predict(xQ).tolist(),'-k')
       ax.plot(xQ.cAg,regT.predict(xQ).tolist(),'-g')
 
       ax.set_xlabel('Ag (g)',fontsize=7)
@@ -257,7 +257,7 @@ for i, ax in enumerate(fig.axes):
       xQerr = dset.cCa_err[3*i:3*i+3]
       yQerr = dset.errHU[3*i:3*i+3]
       ax.errorbar(xQ.cCa,yQ,xerr=xQerr,yerr = yQerr,fmt='.k') 
-      ax.plot(xQ.cCa,reg.predict(xQ).tolist(),'-k')
+      #ax.plot(xQ.cCa,reg.predict(xQ).tolist(),'-k')
       ax.plot(xQ.cCa,regT.predict(xQ).tolist(),'-g')
 
       title_ = 'Gd = ' + str(dset.cGd[3*i]) + 'g \n Agarose = ' + str(dset.cAg[3*i]) + 'g \n SiO$_2$ = ' + str(dset.cSi[3*i]) + 'g'
@@ -317,7 +317,7 @@ for i, ax in enumerate(fig.axes):
       xQerr = dset.cCa_err[3*i:3*i+3]
       yQerr = dset.errHU[3*i:3*i+3]
       ax.errorbar(xQ.cSi,yQ,xerr=xQerr,yerr = yQerr,fmt='.k') 
-      ax.plot(xQ.cSi,reg.predict(xQ).tolist(),'-k')
+      #ax.plot(xQ.cSi,reg.predict(xQ).tolist(),'-k')
       ax.plot(xQ.cSi,regT.predict(xQ).tolist(),'-g')
  
       title_ = 'Gd = ' + str(dset.cGd[3*i]) + 'g \n Agarose = ' + str(dset.cAg[3*i]) + 'g \n CaCO$_3$ = ' + str(dset.cCa[3*i]) + 'g'
