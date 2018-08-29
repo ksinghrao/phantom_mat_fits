@@ -72,7 +72,7 @@ fT1_par = [reg.intercept_] + reg.coef_.tolist()
 # Create plots
 nrow = 3
 ncol = 6
-fig, axs = plt.subplots(nrow, ncol,figsize=(20, 10))
+fig, axs = plt.subplots(nrow, ncol,figsize=(10, 10))
 for i, ax in enumerate(fig.axes):
       #xQ = [dset.cGd[5*i:5*i+5],dset.cAg[5*i:5*i+5],dset.cCa[5*i:5*i+5],dset.cSi[5*i:5*i+5]]      
 
@@ -86,7 +86,7 @@ for i, ax in enumerate(fig.axes):
       ax.errorbar(xQ.cGd,yQ,xerr=xQerr,yerr = yQerr,fmt='.k') 
       ax.plot(xQ.cGd,reg.predict(xQ).tolist(),'-g')
       
-      title_ = 'Agarose = ' + str(dataset2.cAg[5*i]) + 'g \n CaCO$_3$ = ' + str(dataset2.cCa[5*i]) + 'g \n SiO$_2$ = ' + str(dataset2.cSi[5*i]) + 'g'
+      title_ = 'Agarose = ' + str(dataset2.cAg[5*i]) + 'g \n CaCO$_3$ = ' + str(dataset2.cCa[5*i]) + 'g \n GM = ' + str(dataset2.cSi[5*i]) + 'g'
       ax.set_title(title_,fontsize = 7,y=1.08)
       ax.set_xlabel('Gd (umol/ml)',fontsize=7)
       ax.set_ylabel('1/T1 (1/ms)',fontsize=7)
@@ -94,6 +94,8 @@ for i, ax in enumerate(fig.axes):
       ax.ticklabel_format(style='sci',axis='y',scilimits=(0,0)) 
       ax.yaxis.offsetText.set(size=7)
       fig.tight_layout(rect=[0, 0, 1, 1])
+      ax.set_xlim([0,0.6])
+      ax.set_ylim([0,10e-3])
             
 # 4. Create T2 vs Ag plots and fits         
 # 4a.CaCO3 data
@@ -131,7 +133,7 @@ fT2_CaCO3_par = [reg.intercept_] + reg.coef_.tolist()
 # Create plots
 nrow = 4
 ncol = 4
-fig, axs = plt.subplots(nrow, ncol,figsize=(20, 10))
+fig, axs = plt.subplots(nrow, ncol,figsize=(10, 10))
 for i, ax in enumerate(fig.axes):   
       xQ = xB[4*i:4*i+4]
       yQ = dset.meanT2[4*i:4*i+4]
@@ -142,13 +144,16 @@ for i, ax in enumerate(fig.axes):
       #ax.plot(xQ.cAg,reg.predict(xQ).tolist(),'-k')
       ax.plot(xQ.cAg,regT.predict(xQ).tolist(),'-g')
             
-      title_ = 'Gd = ' + str(dset.cGd[4*i]) + 'g \n CaCO$_3$ = ' + str(dset.cCa[4*i]) + 'g \n SiO$_2$ = ' + str(dataset2.cSi[4*i]) + 'g'
+      title_ = 'Gd = ' + str(dset.cGd[4*i]) + 'g \n CaCO$_3$ = ' + str(dset.cCa[4*i]) + 'g \n GM = ' + str(dataset2.cSi[4*i]) + 'g'
       ax.set_title(title_,fontsize = 7,y=1.08)
       ax.set_xlabel('Ag (g)',fontsize=7)
       ax.set_ylabel('1/T2 (1/ms)',fontsize=7)
       ax.tick_params(labelsize=6)
       ax.ticklabel_format(style='sci',axis='y',scilimits=(0,0)) 
       ax.yaxis.offsetText.set(size=7)
+      ax.set_xlim([0,4])
+      ax.set_ylim([0,3.5e-2])
+
       fig.tight_layout(rect=[0, 0, 1, 1])
       
       
@@ -192,9 +197,9 @@ fT2_SiO2_par = [reg.intercept_] + reg.coef_.tolist()
 
 
 # Create plots
-nrow = 5
-ncol = 2
-fig, axs = plt.subplots(nrow, ncol,figsize=(20, 10))
+nrow = 3
+ncol = 4
+fig, axs = plt.subplots(nrow, ncol,figsize=(5, 10))
 for i, ax in enumerate(fig.axes): 
       xQ = xB[3*i:3*i+3]     
       yQ = dset.meanT2[3*i:3*i+3]
@@ -210,9 +215,11 @@ for i, ax in enumerate(fig.axes):
       ax.ticklabel_format(style='sci',axis='y',scilimits=(0,0)) 
       ax.yaxis.offsetText.set(size=7)
       fig.tight_layout(rect=[0, 0, 1, 1])
-      title_ = 'Gd = ' + str(dset.cGd[3*i]) + 'g \n CaCO$_3$ = ' + str(dset.cCa[3*i]) + 'g \n SiO$_2$ = ' + str(dset.cSi[3*i]) + 'g'
+      title_ = 'Gd = ' + str(dset.cGd[3*i]) + 'g \n CaCO$_3$ = ' + str(dset.cCa[3*i]) + 'g \n GM = ' + str(dset.cSi[3*i]) + 'g'
       #print(title_)
       ax.set_title(title_,fontsize = 7,y=1.08)
+      ax.set_xlim([-0.1,1.1])
+      ax.set_ylim([0,1.5e-1])
 
 # 5. Create HU vs CaCO3 and SiO2 plots and fits  
 # 5a. Plot CaCO3 vs HU
@@ -250,7 +257,7 @@ fHU_CaCO3_par = [reg.intercept_] + reg.coef_.tolist()
 # Plot data
 nrow = 5
 ncol = 4
-fig, axs = plt.subplots(nrow, ncol,figsize=(20, 10))
+fig, axs = plt.subplots(nrow, ncol,figsize=(10, 10))
 for i, ax in enumerate(fig.axes): 
       xQ = xB[3*i:3*i+3]
       yQ = dset.meanHU[3*i:3*i+3]
@@ -260,7 +267,7 @@ for i, ax in enumerate(fig.axes):
       #ax.plot(xQ.cCa,reg.predict(xQ).tolist(),'-k')
       ax.plot(xQ.cCa,regT.predict(xQ).tolist(),'-g')
 
-      title_ = 'Gd = ' + str(dset.cGd[3*i]) + 'g \n Agarose = ' + str(dset.cAg[3*i]) + 'g \n SiO$_2$ = ' + str(dset.cSi[3*i]) + 'g'
+      title_ = 'Gd = ' + str(dset.cGd[3*i]) + 'g \n Agarose = ' + str(dset.cAg[3*i]) + 'g \n GM = ' + str(dset.cSi[3*i]) + 'g'
       ax.set_title(title_,fontsize = 7,y=1.08)
       ax.set_xlabel('CaCO$_3$ (g)',fontsize=7)
       ax.set_ylabel('CT# (HU)',fontsize=7)
@@ -268,6 +275,8 @@ for i, ax in enumerate(fig.axes):
       ax.ticklabel_format(style='sci',axis='y',scilimits=(0,0)) 
       ax.yaxis.offsetText.set(size=7)
       fig.tight_layout(rect=[0, 0, 1, 1])
+      ax.set_xlim([-0.1,5.1])
+      ax.set_ylim([0,220])
 
       
 # Plot SiO2 data
@@ -310,7 +319,7 @@ fHU_SiO2_par = [reg.intercept_] + reg.coef_.tolist()
 nrow = 2
 ncol = 5
 
-fig, axs = plt.subplots(nrow, ncol,figsize=(20, 10))
+fig, axs = plt.subplots(nrow, ncol,figsize=(10, 10))
 for i, ax in enumerate(fig.axes):
       xQ = xB[3*i:3*i+3]
       yQ = dset.meanHU[3*i:3*i+3]
@@ -328,6 +337,8 @@ for i, ax in enumerate(fig.axes):
       ax.ticklabel_format(style='sci',axis='y',scilimits=(0,0)) 
       ax.yaxis.offsetText.set(size=7)
       fig.tight_layout(rect=[0, 0, 1, 1])      
+      ax.set_xlim([-0.1,5.1])
+      ax.set_ylim([-200,20])
       
 
 # Save fit parameters
